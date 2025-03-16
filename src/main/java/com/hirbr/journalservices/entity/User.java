@@ -10,23 +10,26 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Document(collection = "users")
 @Data
+@NoArgsConstructor
 public class User {
+
 	@Id
 	private ObjectId id;
-	
+
 	@NonNull
 	@Indexed(unique = true)
 	private String username;
-	
+
 	@NonNull
 	private String password;
-	
+
 	private List<String> roles;
-	
+
 	@DBRef
-	private List<JournalEntity>	journalEntries = new ArrayList<>();
+	private List<Journal> journalEntries = new ArrayList<>();
 }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hirbr.journalservices.entity.JournalEntity;
+import com.hirbr.journalservices.DTO.JournalDTO;
 import com.hirbr.journalservices.services.JournalService;
 import com.hirbr.journalservices.services.UserService;
 
@@ -30,41 +30,24 @@ public class JournalController {
 	@Autowired
 	UserService userService;
 
-//	@GetMapping("get-journal-of-user/")
-//	public ResponseEntity<?> getAllJournalsOfUser() {
-//		try {
-//			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//			String username = auth.getName(); // get the logged-in username
-//			List<JournalEntity> journals = userService.getJournalsOfUsers(username);
-//			if (journals != null && !journals.isEmpty()) {
-//				return new ResponseEntity<>(journals, HttpStatus.OK);
-//			}
-//			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//	}
-
 	@PostMapping("/add-entry")
-	public ResponseEntity<?> addEntry(@RequestBody JournalEntity journalEntity) {
+	public ResponseEntity<?> addEntry(@RequestBody JournalDTO journalDto) {
 		try {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			String username = auth.getName(); // get the logged-in username
-			journalService.saveEntry(journalEntity, username);
-			return new ResponseEntity<>(journalEntity, HttpStatus.CREATED);
+			JournalDTO savedJournalDto = journalService.saveEntry(journalDto, username);
+			return new ResponseEntity<>(savedJournalDto, HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	// Make it user particular...
 	@GetMapping("/find-all")
 	public ResponseEntity<?> findAllJournals() {
 		try {
 			String username = SecurityContextHolder.getContext().getAuthentication().getName();
-			List<JournalEntity> journals = journalService.getAllJournals(username);
+			List<JournalDTO> journals = journalService.getAllJournals(username);
 			if (journals != null && !journals.isEmpty()) {
 				return new ResponseEntity<>(journals, HttpStatus.OK);
 			}
@@ -78,7 +61,7 @@ public class JournalController {
 	public ResponseEntity<?> findJournalById(@PathVariable ObjectId id) {
 		try {
 			String username = SecurityContextHolder.getContext().getAuthentication().getName();
-			JournalEntity journal = journalService.getJournalById(username, id);
+			JournalDTO journal = journalService.getJournalById(username, id);
 			if (journal != null) {
 				return new ResponseEntity<>(journal, HttpStatus.OK);
 			}
@@ -100,13 +83,13 @@ public class JournalController {
 	}
 
 	@PutMapping("update-journal-by-id/{id}")
-	public ResponseEntity<?> UpdateJournalById(@PathVariable ObjectId id, @RequestBody JournalEntity journalEntity) {
+	public ResponseEntity<?> UpdateJournalById(@PathVariable ObjectId id, @RequestBody JournalDTO journalDto) {
 		try {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			String username = auth.getName();
-			JournalEntity journal = journalService.updateJournalById(username, id, journalEntity);
-			if (journal != null) {
-				return new ResponseEntity<>(journal, HttpStatus.NO_CONTENT);
+			JournalDTO updatedJournal = journalService.updateJournalById(username, id, journalDto);
+			if (updatedJournal != null) {
+				return new ResponseEntity<>(updatedJournal, HttpStatus.NO_CONTENT);
 			}
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
