@@ -17,12 +17,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hirbr.journalservices.DTO.JournalDTO;
+import com.hirbr.journalservices.entity.Journal;
 import com.hirbr.journalservices.services.JournalService;
 import com.hirbr.journalservices.services.UserService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
-@RequestMapping("journaling-services")
+@RequestMapping("/journals")
 public class JournalController {
 	@Autowired
 	JournalService journalService;
@@ -30,69 +33,74 @@ public class JournalController {
 	@Autowired
 	UserService userService;
 
-	@PostMapping("/add-entry")
-	public ResponseEntity<?> addEntry(@RequestBody JournalDTO journalDto) {
+	@PostMapping
+	public ResponseEntity<?> addEntry(@RequestBody Journal journal) {
 		try {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			String username = auth.getName(); // get the logged-in username
-			JournalDTO savedJournalDto = journalService.saveEntry(journalDto, username);
-			return new ResponseEntity<>(savedJournalDto, HttpStatus.CREATED);
+			Journal savedJournal = journalService.saveEntry(journal, username);
+			log.info("journal Id created: --> " + savedJournal.getId());
+			return new ResponseEntity<>(savedJournal, HttpStatus.CREATED);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error occured in addEntry --> " + e);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	@GetMapping("/find-all")
+	@GetMapping
 	public ResponseEntity<?> findAllJournals() {
 		try {
 			String username = SecurityContextHolder.getContext().getAuthentication().getName();
-			List<JournalDTO> journals = journalService.getAllJournals(username);
+			List<Journal> journals = journalService.getAllJournals(username);
 			if (journals != null && !journals.isEmpty()) {
 				return new ResponseEntity<>(journals, HttpStatus.OK);
 			}
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
+			log.error("Error occured in findAllJournals --> " + e);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	@GetMapping("find-by-id/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<?> findJournalById(@PathVariable ObjectId id) {
 		try {
 			String username = SecurityContextHolder.getContext().getAuthentication().getName();
-			JournalDTO journal = journalService.getJournalById(username, id);
+			Journal journal = journalService.getJournalById(username, id);
 			if (journal != null) {
 				return new ResponseEntity<>(journal, HttpStatus.OK);
 			}
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
+			log.error("Error occured in findJournalById --> " + e);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	@DeleteMapping("delete-journal-by-id/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<?> DeleteJournalById(@PathVariable ObjectId id) {
 		try {
 			String username = SecurityContextHolder.getContext().getAuthentication().getName();
 			journalService.deleteJournalById(id, username);
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		} catch (Exception e) {
+			log.error("Error occured in DeleteJournalById --> " + e);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	@PutMapping("update-journal-by-id/{id}")
-	public ResponseEntity<?> UpdateJournalById(@PathVariable ObjectId id, @RequestBody JournalDTO journalDto) {
+	@PutMapping("/{id}")
+	public ResponseEntity<?> UpdateJournalById(@PathVariable ObjectId id, @RequestBody Journal journal) {
 		try {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			String username = auth.getName();
-			JournalDTO updatedJournal = journalService.updateJournalById(username, id, journalDto);
+			Journal updatedJournal = journalService.updateJournalById(username, id, journal);
 			if (updatedJournal != null) {
-				return new ResponseEntity<>(updatedJournal, HttpStatus.NO_CONTENT);
+				return new ResponseEntity<>(updatedJournal, HttpStatus.OK);
 			}
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
+			log.error("Error occured in UpdateJournalById --> " + e);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

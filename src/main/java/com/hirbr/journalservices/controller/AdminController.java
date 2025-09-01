@@ -25,7 +25,7 @@ public class AdminController {
 	AdminService adminService;
 
 	// add an api to see all users
-	@GetMapping("/all-users")
+	@GetMapping
 	public ResponseEntity<?> getAllUsers() {
 		log.info("Inside getAllUsers method...");
 		try {
@@ -45,7 +45,7 @@ public class AdminController {
 	}
 
 	// add an api to make somebody admin
-	@PostMapping("/create-admin-user")
+	@PostMapping
 	public ResponseEntity<?> createAdminUser(@RequestBody User user) {
 		try {
 			log.info("Inside createAdminUser method...");

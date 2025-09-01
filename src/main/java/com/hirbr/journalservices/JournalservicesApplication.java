@@ -21,3 +21,4 @@ public class JournalservicesApplication {
 		return new MongoTransactionManager(dbFactory);
 	}
 }
+

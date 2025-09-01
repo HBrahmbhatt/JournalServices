@@ -9,6 +9,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -19,6 +22,7 @@ import lombok.NonNull;
 public class Journal {
 
 	@Id
+	@JsonSerialize(using = ToStringSerializer.class)
 	private ObjectId id;
 
 	@NonNull
@@ -32,7 +36,5 @@ public class Journal {
 
 	private String authorId;
 	private List<String> tags;
-	private String category;
-	private String visibility;
-
+	private List<String> mood;
 }

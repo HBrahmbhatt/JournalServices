@@ -12,4 +12,5 @@ import com.hirbr.journalservices.entity.User;
 public interface UserRepository extends MongoRepository<User, ObjectId> {
 
 	Optional<User> findByUsername(String userName);
+
 }

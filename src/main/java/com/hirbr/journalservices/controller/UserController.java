@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hirbr.journalservices.DTO.UserDTO;
+import com.hirbr.journalservices.entity.User;
 import com.hirbr.journalservices.services.UserService;
 
 import jakarta.validation.Valid;
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 	@Autowired
 	UserService userService;
@@ -31,14 +31,14 @@ public class UserController {
 	 * account, 3 - Deleting a user account
 	 **/
 
-	@GetMapping("/get-user")
+	@GetMapping
 	public ResponseEntity<?> getUserDetails() {
 		try {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			String username = auth.getName();
 			log.info("Fetching user details for username: {}", username);
 
-			UserDTO userDetails = userService.getByUsername(username);
+			User userDetails = userService.getByUsername(username);
 			if (userDetails == null) {
 				log.warn("User not found: {}", username);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
@@ -50,14 +50,14 @@ public class UserController {
 		}
 	}
 
-	@PutMapping("/update-user")
-	public ResponseEntity<?> updateUserById(@RequestBody @Valid UserDTO userDto) {
+	@PutMapping
+	public ResponseEntity<?> updateUserById(@RequestBody @Valid User user) {
 		try {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			String username = auth.getName();
 			log.info("Updating user details for username: {}", username);
 
-			UserDTO updatedUser = userService.updateUser(username, userDto);
+			User updatedUser = userService.updateUser(username, user);
 			if (updatedUser != null) {
 				log.info("User updated successfully: {}", username);
 				return ResponseEntity.ok(updatedUser);
@@ -66,13 +66,13 @@ public class UserController {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
 			}
 		} catch (Exception e) {
-			log.error("Error updating user details for username: {}", userDto.getUsername(), e);
+			log.error("Error updating user details for username: {}", user.getUsername(), e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("An error occurred while updating user details");
 		}
 	}
 
-	@DeleteMapping("/delete-user")
+	@DeleteMapping
 	public ResponseEntity<?> deleteUserById() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
