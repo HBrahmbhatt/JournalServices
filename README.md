@@ -1,4 +1,4 @@
-# Journal App (Ongoing)
+# Journal App
 
 ## Overview
 This **Journal App** is designed to help users securely and intuitively document their thoughts, emotions, and experiences. Built with **Java Spring Boot** microservices and **MongoDB**, the app is designed with scalability, flexibility, and security in mind. Each microservice follows the **Single Responsibility Principle**, ensuring maintainable and modular code.
