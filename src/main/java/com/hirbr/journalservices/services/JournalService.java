@@ -1,12 +1,17 @@
 package com.hirbr.journalservices.services;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +32,9 @@ public class JournalService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	public List<Journal> getAllJournals(String username) {
 		try {
@@ -111,10 +119,30 @@ public class JournalService {
 			user.getJournalEntries().removeIf(x -> x.getId().equals(id));
 			userRepository.save(user);
 			journalRepository.deleteById(id);
-		} catch (UsernameNotFoundException e) {
+		} catch (Exception e) {
 			log.error("Exception occured in deleteJournalById --> " + e);
 			throw new RuntimeException(e);
 		}
 	}
 
+	public List<Journal> findByCreatedAtRange(String username, Date start, Date end, Sort sort, Integer limit) {
+		try {
+			User user = userRepository.findByUsername(username)
+					.orElseThrow(() -> new UsernameNotFoundException("User with username" + username + " not found"));
+			if (user == null) {
+				throw new UsernameNotFoundException(username);
+			}
+			log.info("by-day authorId='{}' start(UTC)={} end(UTC)={}", username, start.toInstant(), end.toInstant());
+
+			Criteria c = new Criteria().andOperator(Criteria.where("authorId").is(user.getUsername()),
+					Criteria.where("createdAt").gte(start).lt(end));
+			Query q = new Query(c).with(sort);
+			if (limit != null && limit > 0)
+				q.limit(limit);
+			return mongoTemplate.find(q, Journal.class);
+		} catch (Exception e) {
+			log.error("Exception occured in findByCreatedAtRange --> " + e);
+			throw new RuntimeException(e);
+		}
+	}
 }

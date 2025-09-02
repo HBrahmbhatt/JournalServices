@@ -1,9 +1,15 @@
 package com.hirbr.journalservices.controller;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hirbr.journalservices.entity.Journal;
@@ -99,6 +106,35 @@ public class JournalController {
 				return new ResponseEntity<>(updatedJournal, HttpStatus.OK);
 			}
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			log.error("Error occured in UpdateJournalById --> " + e);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/by-day")
+	public ResponseEntity<?> getByDay(
+			@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+			@RequestParam(value = "limit", required = false) Integer limit,
+			@RequestParam(value = "tz", defaultValue = "America/Los_Angeles") String tz) {
+		try {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			String username = auth.getName();
+			ZoneId zone = ZoneId.of(tz);
+			ZonedDateTime startZdt = date.atStartOfDay(zone);
+			ZonedDateTime endZdt = startZdt.plusDays(1);
+
+			Date start = Date.from(startZdt.toInstant());
+			Date end = Date.from(endZdt.toInstant());
+
+			Sort sort = Sort.by(Sort.Direction.DESC, "updatedAt", "createdAt", "_id");
+			List<Journal> journals = journalService.findByCreatedAtRange(username, start, end, sort, limit);
+
+			if (journals != null && !journals.isEmpty()) {
+				return new ResponseEntity<>(journals, HttpStatus.OK);
+			}
+			return new ResponseEntity<>(journals, HttpStatus.NO_CONTENT);
+
 		} catch (Exception e) {
 			log.error("Error occured in UpdateJournalById --> " + e);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
