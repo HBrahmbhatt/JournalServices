@@ -10,9 +10,6 @@ This **Journal App** is designed to help users securely and intuitively document
 - **Logging & Code Quality**: Enabled comprehensive logging, integrated **SonarQube** for code quality monitoring, and created **JUnit** test cases for reliability and scalability.
 - **Microservices Architecture**: A multi-layered, modular microservices architecture for easy maintenance and separation of concerns.
 
-## Future Enhancements
-- **AI-Powered Summaries**: Integrating **LLM-based** (Large Language Model) summaries to generate concise, reflective summaries of journal entries over specified time periods.
-
 ## Technologies Used
 - **Java Spring Boot** (for backend)
 - **MongoDB** (for scalable data storage)
@@ -24,4 +21,5 @@ This **Journal App** is designed to help users securely and intuitively document
 ## Development Goals
 This ongoing project helps refine skills in **microservices**, **security**, and **cloud-native application development**, while also exploring the use of **AI** for future feature enhancements.
 
-Inspiration: https://www.youtube.com/watch?v=1993zSY5UBI&list=PLA3GkZPtsafacdBLdd3p1DyRd5FGfr3Ue
+## Future Enhancements
+- **AI-Powered Summaries**: Integrating **LLM-based** (Large Language Model) summaries to generate concise, reflective summaries of journal entries over specified time periods.
