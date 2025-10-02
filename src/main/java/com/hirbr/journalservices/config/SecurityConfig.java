@@ -51,7 +51,8 @@ public class SecurityConfig {
 		return http.csrf(csrf -> csrf.disable()).cors(withDefaults()) // <-- activates your CorsConfigurationSource bean
 				.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-						.requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
+						.requestMatchers("/auth/**", "/api-docs/**", "/swagger-ui.html",
+						          "/swagger-ui/**").permitAll().anyRequest().authenticated())
 				.exceptionHandling(ex -> ex
 						// Return 401 for missing/invalid tokens so the client can refresh
 						.authenticationEntryPoint((req, res, e) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED)))

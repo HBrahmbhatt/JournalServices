@@ -129,7 +129,7 @@ public class JournalController {
 
 			Sort sort = Sort.by(Sort.Direction.DESC, "updatedAt", "createdAt", "_id");
 			List<Journal> journals = journalService.findByCreatedAtRange(username, start, end, sort, limit);
-
+			
 			if (journals != null && !journals.isEmpty()) {
 				return new ResponseEntity<>(journals, HttpStatus.OK);
 			}
