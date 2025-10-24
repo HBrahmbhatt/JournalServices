@@ -3,11 +3,12 @@ FROM eclipse-temurin:17-jdk-focal AS build
 WORKDIR /app
 COPY mvnw .
 COPY .mvn .mvn
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
 COPY pom.xml .
 COPY src src
 
-# Package the application (e.g., as a JAR file)
-RUN ./mvnw package -DskipTests
+# Package the application (as a JAR file)
+RUN ./mvnw package -DskipTests dependency:go-offline
 
 # Stage 2: Create the Final, Lightweight Runtime Image
 # Use a smaller base image for security and size
