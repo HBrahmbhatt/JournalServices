@@ -1,6 +1,6 @@
 # 🪶 Journal Services
-### (Backend Repo: https://github.com/HBrahmbhatt/JournalServices)
-### (Front End Repo: https://github.com/HBrahmbhatt/journal-web)
+### (Backend Repo: [https://github.com/HBrahmbhatt/JournalServices](https://journalservices.onrender.com/api/v1/swagger-ui/index.html])
+### (Front End Repo: [https://github.com/HBrahmbhatt/journal-web])
 
 ---
 
